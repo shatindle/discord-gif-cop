@@ -37,24 +37,17 @@ function isRestrictedHeader(contentType) {
     return false;
 }
 
-function cleanUrl(url) {
+function isGiphy(url) {
     let domain = (new URL(url));
 
-    if (domain.hostname.endsWith("giphy.com")) {
-        const pathname = domain.pathname;
-        const urlParts = pathname.split('-');
-
-        const key = urlParts[-1].replace("-", "");
-
-        return "https://giphy.com/embed/" + key;
-    }
-
-    return url;
+    return domain.hostname.endsWith("giphy.com");
 }
 
 async function checkIfIsRestricted(url) {
     try {
-        url = cleanUrl(url);
+        if (isGiphy(url)) {
+            return true;
+        }
 
         const response = await fetch(url, {
             method: "HEAD",
