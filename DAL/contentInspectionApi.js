@@ -37,15 +37,21 @@ function isRestrictedHeader(contentType) {
     return false;
 }
 
-function isGiphy(url) {
+function isKnownGifDomain(url) {
     let domain = (new URL(url));
 
-    return domain.hostname.endsWith("giphy.com");
+    if (domain.hostname.endsWith("giphy.com"))
+        return true;
+
+    if (domain.hostname.endsWith("tenor.com"))
+        return true;
+
+    return false;
 }
 
 async function checkIfIsRestricted(url) {
     try {
-        if (isGiphy(url)) {
+        if (isKnownGifDomain(url)) {
             return true;
         }
 
