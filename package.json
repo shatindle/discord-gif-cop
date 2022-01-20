@@ -1,0 +1,32 @@
+{
+  "name": "discord-gif-cop",
+  "version": "1.0.0",
+  "description": "A Discord bot that implements a gif cooldown on a per user/per server basis",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shatindle/discord-gif-cop.git"
+  },
+  "keywords": [
+    "discord",
+    "gif",
+    "bot",
+    "cooldown"
+  ],
+  "author": "sha.tindle@gmail.com",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/shatindle/discord-gif-cop/issues"
+  },
+  "homepage": "https://github.com/shatindle/discord-gif-cop#readme",
+  "dependencies": {
+    "@discordjs/rest": "^0.2.0-canary.0",
+    "@google-cloud/firestore": "^5.0.2",
+    "discord-api-types": "^0.26.1",
+    "discord.js": "^13.6.0",
+    "node-fetch": "2.0"
+  }
+}
