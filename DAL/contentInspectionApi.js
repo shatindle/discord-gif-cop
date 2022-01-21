@@ -46,6 +46,9 @@ function isKnownGifDomain(url) {
     if (domain.hostname.endsWith("tenor.com"))
         return true;
 
+    if (domain.hostname.endsWith("gfycat.com"))
+        return true;
+
     return false;
 }
 
