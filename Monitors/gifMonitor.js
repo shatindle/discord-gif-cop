@@ -3,7 +3,7 @@ const { extractUrlsFromContent, checkIfIsRestricted } = require("../DAL/contentI
 const { recordError, recordWarning, isCooldownInEffect } = require("../DAL/databaseApi");
 
 const reason = "GIF cooldown is in effect";
-const cooldownTime = 1000 * 60 * 15;
+const cooldownTime = 1000 * 60 * 5;
 
 /**
  * @description Looks for nitro/steam scams and removes them
