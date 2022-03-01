@@ -31,10 +31,16 @@ function isRestrictedHeader(contentType) {
 
     contentType = contentType.toLowerCase();
 
-    if (contentType === "image/gif")
-        return true;
-
-    return false;
+    switch (contentType) {
+        case 'image/gif':
+            return true;
+        case 'video/mp4':
+            return true;
+        case 'video/webm':
+            return true;
+        break;
+        default:
+            return false;
 }
 
 function isKnownGifDomain(url) {
@@ -48,7 +54,10 @@ function isKnownGifDomain(url) {
 
     if (domain.hostname.endsWith("gfycat.com"))
         return true;
-
+    
+    if (domain.hostname.endsWith("discordapp.com"))
+        return true;
+    
     return false;
 }
 
