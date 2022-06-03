@@ -1,6 +1,7 @@
 const DiscordApi = require('discord.js');
 const { extractUrlsFromContent, checkIfIsRestricted } = require("../DAL/contentInspectionApi");
 const { recordError, recordWarning, isCooldownInEffect } = require("../DAL/databaseApi");
+const { logWarning } = require("../DAL/logApi");
 
 const reason = "GIF cooldown is in effect";
 const cooldownTime = 1000 * 60 * 5;
@@ -58,7 +59,9 @@ const cooldownTime = 1000 * 60 * 5;
      if (cooldownTimeRemaining) {
          // cool down is in effect
          if (message.deletable) {
-             var username = message.member.user.username + "#" + message.member.user.discriminator;
+             let username = message.member.user.username + "#" + message.member.user.discriminator;
+             let channelId = message.channel.id;
+             let client = message.client;
 
              await message.delete();
 
@@ -79,6 +82,13 @@ const cooldownTime = 1000 * 60 * 5;
                  userId,
                  username,
                  reason);
+
+            await logWarning(
+                client,
+                guildId,
+                userId,
+                channelId,
+                "GIF");
          }
      }
  }
