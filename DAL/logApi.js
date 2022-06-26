@@ -27,12 +27,12 @@ async function logActivity(client, guildId, action, activity, color = "#007bff")
 
 const WARNING_COLOR = "#ffc107";
 
-const logWarning = async (client, guildId, userId, channelId, type) =>
+const logWarning = async (client, guildId, userId, username, channelId, type) =>
     await logActivity(
         client,
         guildId, 
         `User warned for ${type} spam`,
-        `**<@${userId}> sent ${type} spam in <#${channelId}>**`,
+        `**<@${userId}> sent ${type} spam in <#${channelId}>**\nUsername: ${username}\nUser ID: ${userId}`,
         WARNING_COLOR);
 
 module.exports = {

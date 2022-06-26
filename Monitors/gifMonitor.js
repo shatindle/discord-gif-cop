@@ -87,6 +87,7 @@ const cooldownTime = 1000 * 60 * 5;
                 client,
                 guildId,
                 userId,
+                username,
                 channelId,
                 "GIF");
          }
