@@ -32,7 +32,7 @@ const logWarning = async (client, guildId, userId, username, channelId, type) =>
         client,
         guildId, 
         `User warned for ${type} spam`,
-        `**<@${userId}> sent ${type} spam in <#${channelId}>**\nUsername: ${username}\nUser ID: ${userId}`,
+        `**<@${userId}> sent ${type} spam in <#${channelId}>**\n**Username:** ${username}\n**User ID:** ${userId}`,
         WARNING_COLOR);
 
 module.exports = {
