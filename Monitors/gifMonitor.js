@@ -26,8 +26,6 @@ firebaseMonitor("levels", (changes) => addressChanges(changes, serverLevels));
         var userId = message.member.id;
         let channelId = message.channel.id;
 
-        if (channelId !== "454555257784238090") return;
-
         // get server permissions (if they exist)
         let serverLevel = serverLevels[guildId];
 
