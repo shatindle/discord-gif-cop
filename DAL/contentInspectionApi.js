@@ -25,7 +25,7 @@ function onlyUnique(value, index, self) {
     return self.indexOf(value) === index;
 }
 
-function isRestrictedHeader(contentType) {
+function isRestrictedHeader(contentType, level) {
     if (!contentType)
         return false;
 
@@ -33,6 +33,14 @@ function isRestrictedHeader(contentType) {
 
     if (contentType === "image/gif")
         return true;
+
+    if (level === "all") {
+        if (contentType.indexOf("image/") === 0) return true;
+        if (contentType.indexOf("video/") === 0) return true;
+
+        // not doing audio for now
+        // if (contentType.indexOf("audio/") === 0) return true;
+    }
 
     return false;
 }
@@ -52,7 +60,7 @@ function isKnownGifDomain(url) {
     return false;
 }
 
-async function checkIfIsRestricted(url) {
+async function checkIfIsRestricted(url, level) {
     try {
         if (isKnownGifDomain(url)) {
             return true;
@@ -69,7 +77,7 @@ async function checkIfIsRestricted(url) {
         if (response && response.headers && response.headers.get) {
             const contentType = response.headers.get("Content-Type");
             
-            return isRestrictedHeader(contentType);
+            return isRestrictedHeader(contentType, level);
         }
 
         return false;

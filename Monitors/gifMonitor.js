@@ -1,10 +1,14 @@
 const DiscordApi = require('discord.js');
 const { extractUrlsFromContent, checkIfIsRestricted } = require("../DAL/contentInspectionApi");
-const { recordError, recordWarning, isCooldownInEffect } = require("../DAL/databaseApi");
+const { recordError, recordWarning, isCooldownInEffect, monitor:firebaseMonitor, addressChanges } = require("../DAL/databaseApi");
 const { logWarning } = require("../DAL/logApi");
 
 const reason = "GIF cooldown is in effect";
 const cooldownTime = 1000 * 60 * 5;
+
+const serverLevels = {};
+
+firebaseMonitor("levels", (changes) => addressChanges(changes, serverLevels));
 
 /**
  * @description Looks for nitro/steam scams and removes them
@@ -20,23 +24,42 @@ const cooldownTime = 1000 * 60 * 5;
 
         var guildId = message.guild.id;
         var userId = message.member.id;
+        let channelId = message.channel.id;
+
+        if (channelId !== "454555257784238090") return;
+
+        // get server permissions (if they exist)
+        let serverLevel = serverLevels[guildId];
+
+        if (!serverLevel) {
+            serverLevel = {
+                id: guildId,
+                level: "gif" // default the server to GIF Only
+            };
+        }
+
+        // channel level if it exists, otherwise server level if it exists, otherwise GIF only
+        let channelLevel = serverLevel[channelId] ? serverLevel[channelId] : serverLevel.level ? serverLevel.level : "gif";
     
+        // no need to do anything if the channel allows everything
+        if (channelLevel === "none") return;
+
         try {
             // possible spam.  Does it have a URL?
             var urlsFound = extractUrlsFromContent(message.content);
         
             for (var i = 0; i < urlsFound.length; i++) {
                 // see if the message content contains a gif
-                if (await checkIfIsRestricted(urlsFound[i]) || await checkIfIsRestricted(urlsFound[i] + ".gif")) {
-                    await restrictedContentEncountered(message, userId, guildId);
+                if (await checkIfIsRestricted(urlsFound[i], channelLevel) || await checkIfIsRestricted(urlsFound[i] + ".gif", channelLevel)) {
+                    await restrictedContentEncountered(message, userId, guildId, channelLevel);
                 }
             }
 
             if (message.attachments && message.attachments.size > 0) {
                 // evaluate the attachments
                 for (let file of message.attachments) {
-                    if (file && file.length > 1 && file[1].contentType === "image/gif") {
-                        await restrictedContentEncountered(message, userId, guildId);
+                    if (file && file.length > 1 && (channelLevel === "all" || file[1].contentType === "image/gif")) {
+                        await restrictedContentEncountered(message, userId, guildId, channelLevel);
                     }
                 }
             }
@@ -51,7 +74,7 @@ const cooldownTime = 1000 * 60 * 5;
     });
  }
 
- async function restrictedContentEncountered(message, userId, guildId) {
+ async function restrictedContentEncountered(message, userId, guildId, level) {
      // check if the user has a recent cooldown in this server
      let currentTime = Date.now().valueOf();
      let cooldownTimeRemaining = isCooldownInEffect(userId, guildId, cooldownTime);
@@ -70,7 +93,7 @@ const cooldownTime = 1000 * 60 * 5;
              let timeLeft = minutes > 1 ? "" + minutes + " minutes" : "about a minute";
 
              var response = await message.channel.send(
-                 "GIF cooldown is in effect for <@" + userId + ">.  Please wait " + timeLeft + " before sending another GIF.");
+                 "Cooldown is in effect for <@" + userId + ">.  Please wait " + timeLeft + ` before sending another ${level === "gif" ? "GIF" : "image or video"}.`);
 
              setTimeout(async function() {
                  if (response.deletable)
