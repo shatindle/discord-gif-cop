@@ -59,6 +59,25 @@ async function recordError(guildId, userId, error, reason) {
     await writeLog("error", guildId, userId, null, reason, error);
 }
 
+async function loadAllLogs() {
+    var ref = await db.collection("warning");
+    var docs = await ref.get();
+
+    var alllogs = [];
+
+    if (docs.size > 0) {
+        docs.forEach(e => {
+            var data = e.data();
+
+            data.timestamp = data.timestamp.toDate();
+
+            alllogs.push(data);
+        });
+    }
+
+    return alllogs;
+}
+
 var coolDowns = {};
 
 /**
@@ -240,5 +259,7 @@ module.exports = {
     registerLevelMonitor,
 
     monitor,
-    addressChanges
+    addressChanges,
+
+    loadAllLogs
 };
