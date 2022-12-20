@@ -21,7 +21,7 @@ module.exports = {
 	async execute(interaction) {
         try {
             const userId = interaction.user.id;
-            const { id:channelId } = interaction.options.getChannel("channel");
+            const channel = interaction.options.getChannel("channel");
             const level = interaction.options.getString("level");
             const guildId = interaction.guild.id;
 
@@ -35,7 +35,7 @@ module.exports = {
                 return;
             }
 
-            await registerLevelMonitor(guildId, channelId, level);
+            await registerLevelMonitor(guildId, channel ? channel.id : null, level);
 
             await logActivity(interaction.client, interaction.guild.id, `Strictness applied`, `<@${interaction.user.id}> used:\n ${interaction.toString()}`);
 
