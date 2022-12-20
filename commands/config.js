@@ -49,7 +49,10 @@ __Channel Overrides__
             let hasOverride = false;
 
             for (let key of Object.keys(serverLevel)) {
-                if (key === "id" || key === "level") continue;
+                if (key === "id") continue;
+                if (key === "level") continue;
+                if (key === "createdOn") continue;
+                if (key === "_id") continue;
 
                 hasOverride = true;
                 response += `<#${key}>: ${convertLevelToText(serverLevel[key])}
