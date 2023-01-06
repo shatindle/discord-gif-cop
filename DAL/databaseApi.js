@@ -84,12 +84,21 @@ var coolDowns = {};
  * @description Evaluates repeat occurrences
  * @param {String} userId The user's discord ID
  * @param {String} message The message the user sent
+ * @param {Number} cooldown The time in milliseconds of the cooldown
+ * @param {Number} currentTime The current time
  * @returns Whether the user should be removed from the server (repeat phishing message)
  */
 function isCooldownInEffect(userId, guildId, cooldown) {
     const key = userId + ":" + guildId;
 
     if (typeof coolDowns[key] !== "number") {
+        coolDowns[key] = Date.now().valueOf() + cooldown;
+
+        return false;
+    }
+
+    if (coolDowns[key] < Date.now().valueOf()) {
+        // this time has expired but hasn't been cleared, reset it
         coolDowns[key] = Date.now().valueOf() + cooldown;
 
         return false;
@@ -175,6 +184,25 @@ async function registerLevelMonitor(guildId, channelId, level) {
     }
 }
 
+async function registerCooldown(guildId, minutes) {
+    var ref = await db.collection(LEVEL_COLLECTION).doc(guildId);
+    var docs = await ref.get();
+
+    if (!minutes) minutes = null;
+
+    if (docs.exists) {
+        await ref.update({
+            minutes
+        });
+    } else {
+        await ref.set({
+            id: guildId,
+            minutes,
+            createdOn: Firestore.Timestamp.now()
+        });
+    }
+}
+
 async function loadAllLogChannels() {
     var ref = await db.collection(LOGS_COLLECTION);
     var docs = await ref.get();
@@ -257,6 +285,7 @@ module.exports = {
     loadAllLogChannels,
     getLogChannel,
     registerLevelMonitor,
+    registerCooldown,
 
     monitor,
     addressChanges,

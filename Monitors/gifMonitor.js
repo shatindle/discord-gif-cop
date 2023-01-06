@@ -4,7 +4,6 @@ const { recordError, recordWarning, isCooldownInEffect, monitor:firebaseMonitor,
 const { logWarning } = require("../DAL/logApi");
 
 const reason = "GIF cooldown is in effect";
-const cooldownTime = 1000 * 60 * 5;
 
 const serverLevels = {};
 
@@ -32,12 +31,16 @@ firebaseMonitor("levels", (changes) => addressChanges(changes, serverLevels));
         if (!serverLevel) {
             serverLevel = {
                 id: guildId,
-                level: "gif" // default the server to GIF Only
+                level: "gif", // default the server to GIF Only
+                minutes: 5
             };
         }
 
         // channel level if it exists, otherwise server level if it exists, otherwise GIF only
         let channelLevel = serverLevel[channelId] ? serverLevel[channelId] : serverLevel.level ? serverLevel.level : "gif";
+        let minutes = serverLevel.minutes ? serverLevel.minutes : 5;
+
+        minutes = minutes * 60 * 1000;
     
         // no need to do anything if the channel allows everything
         if (channelLevel === "none") return;
@@ -49,7 +52,7 @@ firebaseMonitor("levels", (changes) => addressChanges(changes, serverLevels));
             for (var i = 0; i < urlsFound.length; i++) {
                 // see if the message content contains a gif
                 if (await checkIfIsRestricted(urlsFound[i], channelLevel) || await checkIfIsRestricted(urlsFound[i] + ".gif", channelLevel)) {
-                    await restrictedContentEncountered(message, userId, guildId, channelLevel);
+                    await restrictedContentEncountered(message, userId, guildId, channelLevel, minutes);
                 }
             }
 
@@ -57,7 +60,7 @@ firebaseMonitor("levels", (changes) => addressChanges(changes, serverLevels));
                 // evaluate the attachments
                 for (let file of message.attachments) {
                     if (file && file.length > 1 && (channelLevel === "all" || file[1].contentType === "image/gif")) {
-                        await restrictedContentEncountered(message, userId, guildId, channelLevel);
+                        await restrictedContentEncountered(message, userId, guildId, channelLevel, minutes);
                     }
                 }
             }
@@ -72,7 +75,7 @@ firebaseMonitor("levels", (changes) => addressChanges(changes, serverLevels));
     });
  }
 
- async function restrictedContentEncountered(message, userId, guildId, level) {
+ async function restrictedContentEncountered(message, userId, guildId, level, cooldownTime) {
      // check if the user has a recent cooldown in this server
      let currentTime = Date.now().valueOf();
      let cooldownTimeRemaining = isCooldownInEffect(userId, guildId, cooldownTime);
