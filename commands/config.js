@@ -36,11 +36,13 @@ module.exports = {
             if (!serverLevel) {
                 serverLevel = {
                     id: guildId,
-                    level: "gif" // default the server to GIF Only
+                    level: "gif", // default the server to GIF Only
+                    minutes: 5
                 };
             }
 
             let response = `__Server Permissions__
+**Cooldown**: ${serverLevel.minutes && serverLevel.minutes > 0 ? serverLevel.minutes : 5} minute${serverLevel.minutes && serverLevel.minutes > 1 ? "s" : ""}
 **Global**: ${convertLevelToText(serverLevel.level)}
 
 __Channel Overrides__
@@ -53,6 +55,7 @@ __Channel Overrides__
                 if (key === "level") continue;
                 if (key === "createdOn") continue;
                 if (key === "_id") continue;
+                if (key === "minutes") continue;
 
                 hasOverride = true;
                 response += `<#${key}>: ${convertLevelToText(serverLevel[key])}
