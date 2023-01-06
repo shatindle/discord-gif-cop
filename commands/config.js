@@ -57,6 +57,8 @@ __Channel Overrides__
                 if (key === "_id") continue;
                 if (key === "minutes") continue;
 
+                if (convertLevelToText(serverLevel.level) === convertLevelToText(serverLevel[key])) continue;
+
                 hasOverride = true;
                 response += `<#${key}>: ${convertLevelToText(serverLevel[key])}
 `;
