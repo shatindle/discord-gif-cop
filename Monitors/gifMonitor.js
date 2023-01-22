@@ -53,6 +53,7 @@ firebaseMonitor("levels", (changes) => addressChanges(changes, serverLevels));
                 // see if the message content contains a gif
                 if (await checkIfIsRestricted(urlsFound[i], channelLevel) || await checkIfIsRestricted(urlsFound[i] + ".gif", channelLevel)) {
                     await restrictedContentEncountered(message, userId, guildId, channelLevel, minutes);
+                    return;
                 }
             }
 
@@ -61,6 +62,7 @@ firebaseMonitor("levels", (changes) => addressChanges(changes, serverLevels));
                 for (let file of message.attachments) {
                     if (file && file.length > 1 && (channelLevel === "all" || file[1].contentType === "image/gif")) {
                         await restrictedContentEncountered(message, userId, guildId, channelLevel, minutes);
+                        return;
                     }
                 }
             }
