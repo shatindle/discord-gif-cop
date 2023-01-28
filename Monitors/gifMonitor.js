@@ -66,6 +66,14 @@ firebaseMonitor("levels", (changes) => addressChanges(changes, serverLevels));
                     }
                 }
             }
+
+            if (channelLevel === "allandstickers") {
+                // check if the message contains stickers
+                if (message.stickers.size > 0) {
+                    // message contains stickers and we're supposed to restrict it
+                    await restrictedContentEncountered(message, userId, guildId, channelLevel, minutes);
+                }
+            }
         } catch (err) {
             // something went wrong when assessing the message content
             try {
@@ -95,8 +103,14 @@ firebaseMonitor("levels", (changes) => addressChanges(changes, serverLevels));
 
              let timeLeft = minutes > 1 ? "" + minutes + " minutes" : "about a minute";
 
+             let blocktype = "image, video, or sticker";
+
+             if (level === "gif") blocktype = "GIF";
+             else if (level === "all") blocktype = "image or video";
+             else if (level === "allandstickers") blocktype = "image, video, or sticker";
+
              var response = await message.channel.send(
-                 "Cooldown is in effect for <@" + userId + ">.  Please wait " + timeLeft + ` before sending another ${level === "gif" ? "GIF" : "image or video"}.`);
+                 "Cooldown is in effect for <@" + userId + ">.  Please wait " + timeLeft + ` before sending another ${blocktype}.`);
 
              setTimeout(async function() {
                  if (response.deletable)
@@ -115,7 +129,7 @@ firebaseMonitor("levels", (changes) => addressChanges(changes, serverLevels));
                 userId,
                 username,
                 channelId,
-                "GIF");
+                level);
          }
      }
  }

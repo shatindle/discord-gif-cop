@@ -12,8 +12,9 @@ module.exports = {
                 .setDescription("The level of strictness (default is GIF only).")
                 .addChoices(
                     { name: "Unrestricted", value: "none" },
-                    { name: "GIF Only", value: "gif" },
-                    { name: "All", value: "all" })
+                    { name: "Block GIFs", value: "gif" },
+                    { name: "Block GIFs and media", value: "all" },
+                    { name: "Block GIFs, media, and stickers", value: "allandstickers" })
                 .setRequired(true))
         .addChannelOption(option => 
             option.setName("channel")
