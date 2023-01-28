@@ -8,9 +8,10 @@ const serverLevels = {};
 firebaseMonitor("levels", (changes) => addressChanges(changes, serverLevels));
 
 function convertLevelToText(level) {
-    if (level === "gif") return "GIF Only";
-    if (level === "none") return "Unrestricted";
-    return "Fully Restricted";
+    if (level === "gif") return "Block GIFs";
+    if (level === "all") return "Block media and videos";
+    if (level === "allandstickers") return "Block media, videos, and stickers"
+    return "Unrestricted";
 }
 
 module.exports = {
