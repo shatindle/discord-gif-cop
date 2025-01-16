@@ -5,6 +5,7 @@ services:
     build: 
       context: .
       dockerfile: Dockerfile
+    container_name: discord-gif-cop
     restart: unless-stopped
     networks:
       - discord-gif-cop-bot-network
